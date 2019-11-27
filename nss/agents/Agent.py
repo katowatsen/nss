@@ -6,24 +6,24 @@ class Agent():
         reqEnergy = None
         fitness = None #might remove
 
-    def act():
+    def act(self):
         #evaluate decissions based on genome and probability
         pass
 
-    def search():
+    def search(self):
         pass
 
-    def travel():
+    def travel(self):
         pass
 
-    def eatFood():
+    def eatFood(self):
         pass
 
-    def cooperate():
+    def cooperate(self):
         pass
 
-    def defect():
+    def defect(self):
         pass
 
-    def moralize():
-        pass
+    def moralize(self):
+        pas
