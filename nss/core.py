@@ -9,4 +9,5 @@ def setClasses(agentAmount):
     setAgents(agentAmount)
 
 def doRun():
+    setAgents()
     pass

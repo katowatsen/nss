@@ -5,6 +5,7 @@ class Agent():
         curEnergy = None
         reqEnergy = None
         fitness = None #might remove
+        position = None
 
     def act(self):
         #evaluate decissions based on genome and probability
@@ -26,4 +27,4 @@ class Agent():
         pass
 
     def moralize(self):
-        pas
+        pass
