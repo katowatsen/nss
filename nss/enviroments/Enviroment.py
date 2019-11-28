@@ -3,7 +3,6 @@ import numpy as np
 class Enviroment:
 
     def __init__(self, dimensions, foodAmount):
-        np.random.seed(0)
         self.dim = dimensions
         self.foodAmount = foodAmount
         self.env = np.array(np.zeros(self.dim))
