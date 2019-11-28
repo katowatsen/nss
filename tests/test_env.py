@@ -1,5 +1,5 @@
-from ..nss.enviroments.Enviroment import Enviroment as env
 import numpy as np
+from ..nss.enviroments.Enviroment import Enviroment as env
 
 def test_setFood():
     test_enviroment = env([2,2], 2)
@@ -9,4 +9,3 @@ def test_setFood():
 def test_removeAllFood():
     test_enviroment = env([2,2], 2)
     assert np.array_equal(test_enviroment.env,  np.array([[0,0],[0,0]]))
-
