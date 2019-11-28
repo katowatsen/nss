@@ -1,12 +1,12 @@
 import numpy as np
-np.random.seed(0)
 
 class Enviroment:
 
     def __init__(self, dimensions, foodAmount):
-        self.dimensions = dimensions
+        np.random.seed(0)
+        self.dim = dimensions
         self.foodAmount = foodAmount
-        self.env = np.array(np.zeros(self.dimensions))
+        self.env = np.array(np.zeros(self.dim))
 
     def setFood(self):
         i = 0
@@ -19,13 +19,13 @@ class Enviroment:
 
 
     def getRandomCoord(self): 
-        return (np.random.randint(0, self.dimensions[0]),
-                np.random.randint(0, self.dimensions[1]))
+        return (np.random.randint(0, self.dim[0]),
+                np.random.randint(0, self.dim[1]))
 
     def removeFoodAtAgent(self, agent):
         pass
 
     def removeAllFood(self):
-        self.env = np.array(np.zeros(self.dimensions))
+        self.env = np.array(np.zeros(self.dim))
 
 
