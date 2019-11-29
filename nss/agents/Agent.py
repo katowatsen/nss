@@ -27,24 +27,53 @@ class Agent():
 
         #self position is a random possible coordinate on enviroment,
         #including floats
-        self.position = (np.random.random_sample() * env.dim[0],
-                         np.random.random_sample() * env.dim[1])
+        self.position = [np.random.random_sample() * env.dim[0],
+                         np.random.random_sample() * env.dim[1]]
 
     def calcEnergy(self):
         pass
 
-    def act(self):
-        #evaluate decissions based on genome and probability
-        pass
+    def act(self, env):
+        if env.foodAtAgent(self):
+            self.eatFood(env)
 
-    def search(self):
-        pass
+        self.search()
 
-    def travel(self):
-        pass
 
-    def eatFood(self):
-        pass
+    def search(self, env):
+        #should be performed if food pos != agent pos
+        seenFood = []
+        for row in range(0, env.dim[0]):
+            for col in range(0, env.dim[1]):
+                if env.map[row][col] >= 1: 
+                    distance = math.hypot(
+                    math.fabs(row - self.position[0]),
+                    math.fabs(col - self.position[1]))
+
+                    if self.genome["search"] >= distance:
+                        seenFood.append(((row,col), distance))
+
+        if len(seenFood) > 0:
+            return sorted(seenFood, key = lambda e: e[1])[0]
+        else:
+            return None
+            
+    def travel(self, env, food):
+        if self.genome["speed"] >= food[1]:
+            self.position = food[0]
+
+        else:
+            dis = self.genome["speed"] 
+            theta = math.atan(
+                    (food[0][1] - self.position[1])/
+                    (food[0][0] - self.position[0]))
+
+            self.position[0] = math.fabs(dis * math.cos(theta) + food[0][0] - self.position[0])
+            self.position[1] = math.fabs(dis * math.cos(theta) + food[0][1] - self.position[1])
+            
+    def eatFood(self, env):
+        while env.map[agent.position[0], agent.position[1]] != 0:
+            env.removeFoodAtAgent(self)
 
     def reproduce(self):
         pass
