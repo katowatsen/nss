@@ -4,15 +4,19 @@ class Engine():
         pass
 
     def run(self, agent_list, env, world):
-        while world.cycle <= world.totalCycles:
-            while world.tick <= word.totalTicks:
-                for agent in agent_list:
-                    agent.act()
 
-                agent.update()
-                env.update()
-                world.tick += 1
-            world.cycle += 1
+        while world.cycle <= world.totalCycles:
+            while world.tick <= world.totalTicks:
+                for agent in agent_list:
+                    agent.act(env,world, agent_list)
+
+                world.updateTick()
+
+
+            world.tick = 0
+            world.updateCycle()
+
+        return agent_list 
 
     def outputToFile(self, IOfile):
         pass
