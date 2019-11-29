@@ -6,6 +6,7 @@ class Enviroment:
         self.dim = dimensions
         self.foodAmount = foodAmount
         self.map = np.array(np.zeros(self.dim))
+        self.foodValue = 500 #temp
 
     def setFood(self):
         i = 0
@@ -22,7 +23,7 @@ class Enviroment:
                 np.random.randint(0, self.dim[1]))
 
     def foodAtAgent(self, agent):
-        if self.map[agent.position[0], agent.position[1]]:
+        if self.map[int(agent.position[0]), int(agent.position[1])]:
             return True
         else:
             return False
