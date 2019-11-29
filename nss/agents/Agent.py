@@ -25,20 +25,29 @@ class Agent():
         self.reqEnergy = None
         self.fitness = None #might remove
 
+        self.distanceTraveled = 0 
+
         #self position is a random possible coordinate on enviroment,
         #including floats
         self.position = [np.random.random_sample() * env.dim[0],
                          np.random.random_sample() * env.dim[1]]
 
     def calcEnergy(self):
-        pass
+        self.reqEnergy = 1/2 * self.genome["mass"] * math.pow(self.genome["travel"], 2) + self.genome["search"]
+        
 
-    def act(self, env):
+
+    def act(self, env, world, agent_list):
+        self.calcEnergy()
         if env.foodAtAgent(self):
             self.eatFood(env)
 
-        self.search()
+        self.travel(env, self.search(env))
 
+        if world.tick == world.totalTicks:
+            return self.reproduce(agent_list, 2, env, 10, 0.1)
+
+        return agent_list
 
     def search(self, env):
         #should be performed if food pos != agent pos
@@ -59,30 +68,67 @@ class Agent():
             return None
             
     def travel(self, env, food):
-        if self.genome["speed"] >= food[1]:
-            self.position = food[0]
+        if food == None:
+            return self.wander()
+
+        elif self.genome["travel"] >= food[1]:
+            self.position = list(food[0])
+
+            self.distanceTraveled += math.sqrt(math.pow(
+                self.position[0]-food[0][0],2)+math.pow(
+                self.position[1]-food[0][1],2))
+
+
+        elif food[0][0] == self.position[0]:
+            self.position[1] += self.genome["travel"]
+            return
+
 
         else:
-            dis = self.genome["speed"] 
+            dis = self.genome["travel"] 
             theta = math.atan(
                     (food[0][1] - self.position[1])/
                     (food[0][0] - self.position[0]))
 
-            self.position[0] = math.fabs(dis * math.cos(theta) + food[0][0] - self.position[0])
-            self.position[1] = math.fabs(dis * math.cos(theta) + food[0][1] - self.position[1])
+            x = math.fabs(dis * math.cos(theta) + food[0][0] - self.position[0])
+            y = math.fabs(dis * math.cos(theta) + food[0][1] - self.position[1])
+
+            self.position[0] = x
+            self.position[1] = y
+
+            self.distanceTraveled += math.sqrt(math.pow(
+                (self.position[0]-x),2) + math.pow(
+                (self.position[1]-y),2))
             
     def eatFood(self, env):
-        while env.map[agent.position[0], agent.position[1]] != 0:
-            env.removeFoodAtAgent(self)
+        if self.position[0] % 1 == 0 and self.position[1] % 1 == 0:
+            while env.map[self.position[0], self.position[1]] != 0:
+                env.removeFoodAtAgent(self)
+                self.curEnergy += env.foodValue
 
-    def reproduce(self):
-        pass
+    def reproduce(self, agent_list, reproduceCost, env, MAX_mass, MAX_deviation):
 
-    def mutateChild(self):
+        while self.curEnergy >= self.reqEnergy + reproduceCost:
+            agent_list.append(self.mutateChild(Agent(env, MAX_mass), MAX_deviation))
+            self.curEnergy -= reproduceCost
+
+        return agent_list
+
+    def mutateChild(self,child, MAX_deviation):
+        child.genome = self.genome
+        for k in child.genome.keys():
+            child.genome[k] += np.random.choice(
+            a = [-1,1]) *  np.random.random_sample() * MAX_deviation
+
+        return child
+
+
+    def wander(self):
         pass
 
     def cooperate(self):
         pass
+
 
     def defect(self):
         pass
