@@ -5,7 +5,7 @@ class Enviroment:
     def __init__(self, dimensions, foodAmount):
         self.dim = dimensions
         self.foodAmount = foodAmount
-        self.env = np.array(np.zeros(self.dim))
+        self.map = np.array(np.zeros(self.dim))
 
     def setFood(self):
         i = 0
@@ -13,7 +13,7 @@ class Enviroment:
 
         while(i < self.foodAmount):
             randCoord = self.getRandomCoord()
-            self.env[randCoord[0], randCoord[1]] += 1
+            self.map[randCoord[0], randCoord[1]] += 1
             i+= 1
 
 
@@ -21,10 +21,16 @@ class Enviroment:
         return (np.random.randint(0, self.dim[0]),
                 np.random.randint(0, self.dim[1]))
 
+    def foodAtAgent(self, agent):
+        if self.map[agent.position[0], agent.position[1]]:
+            return True
+        else:
+            return False
+
     def removeFoodAtAgent(self, agent):
-        pass
+        self.map[agent.position[0],agent.position[1]] -= 1
 
     def removeAllFood(self):
-        self.env = np.array(np.zeros(self.dim))
+        self.map = np.array(np.zeros(self.dim))
 
 
