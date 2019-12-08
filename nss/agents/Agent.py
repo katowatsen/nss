@@ -38,17 +38,20 @@ class Agent():
         if env.foodAtPosition(self.position):
             self.eatFood(env)
 
-        self.travel(env, self.parr_search(env))
+        self.travel(env, self.search(env))
 
         if world.tick == world.totalTicks:
             return self.reproduce(agent_list, 2, env, 10, 0.1)
 
         return agent_list
 
+    def update(self):
+        pass
+
     def calcEnergy(self):
         self.reqEnergy = 1/2 * self.genome["mass"] * math.pow(self.genome["travel"], 2) + self.genome["search"]
 
-    def dictSearch(self, env):
+    def search(self, env):
 
         closestFood = None
 
@@ -81,25 +84,19 @@ class Agent():
 
         else:
             distance = self.genome["travel"] 
-            theta = math.atan(
-                    (food[0][1] - self.position[1])/
+            theta = math.atan2(
+                    (food[0][1] - self.position[1]),
                     (food[0][0] - self.position[0]))
 
-            #is this correct? -yes
-            x = distance * math.cos(theta) + food[0][0] - self.position[0]
-            y = distance * math.sin(theta) + food[0][1] - self.position[1]
-
-            self.position[0] = x
-            self.position[1] = y
+            self.position[0] += distance * math.cos(theta)
+            self.position[1] += distance * math.sin(theta)
 
             self.distanceTraveled += distance
-
             
     def eatFood(self, env):
-        if self.position[0] % 1 == 0 and self.position[1] % 1 == 0:
-            while env.map[self.position[0], self.position[1]] != 0:
-                env.removeFoodAtPosition(self.position)
-                self.curEnergy += env.foodValue
+        while env.foodAtPosition(self.position):
+            env.removeFoodAtPosition(self.position)
+            self.curEnergy += env.foodValue
 
     def reproduce(self, agent_list, reproduceCost, env, MAX_mass, MAX_deviation):
 
