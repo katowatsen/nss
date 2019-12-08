@@ -69,9 +69,9 @@ class Agent():
         elif self.genome["travel"] >= food[1]:
             self.position = list(food[0])
 
-            self.distanceTraveled += math.sqrt(math.pow(
-                self.position[0]-food[0][0],2)+math.pow(
-                self.position[1]-food[0][1],2))
+            self.distanceTraveled += math.hypot(
+                self.position[0]-food[0][0],
+                self.position[1]-food[0][1])
 
 
         elif food[0][0] == self.position[0]:
@@ -80,21 +80,20 @@ class Agent():
 
 
         else:
-            dis = self.genome["travel"] 
+            distance = self.genome["travel"] 
             theta = math.atan(
                     (food[0][1] - self.position[1])/
                     (food[0][0] - self.position[0]))
 
-            #is this correct?
-            x = math.fabs(dis * math.cos(theta) + food[0][0] - self.position[0])
-            y = math.fabs(dis * math.sin(theta) + food[0][1] - self.position[1])
-
-            self.distanceTraveled += math.hypot(
-                (self.position[0]-x),
-                (self.position[1]-y))
+            #is this correct? -yes
+            x = distance * math.cos(theta) + food[0][0] - self.position[0]
+            y = distance * math.sin(theta) + food[0][1] - self.position[1]
 
             self.position[0] = x
             self.position[1] = y
+
+            self.distanceTraveled += distance
+
             
     def eatFood(self, env):
         if self.position[0] % 1 == 0 and self.position[1] % 1 == 0:
