@@ -32,14 +32,19 @@ class Enviroment:
 
     def foodAtPosition(self, position):
 
-        if self.map.get(position) >= 1:
+        if tuple(position) in self.map:
             return True
         else:
             return False
 
     def removeFoodAtPosition(self, position):
 
-        self.map[position] -= 1
+        
+        if self.map.get(tuple(position)) == 0:
+            del self.map[tuple(position)]
+
+        else:
+            self.map[tuple(position)] -= 1
 
     def removeAllFood(self):
 
