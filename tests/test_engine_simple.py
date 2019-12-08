@@ -9,13 +9,13 @@ def test_run():
     np.random.seed(0)
 
     engine = Engine.Engine()
-    world = World.World(3,3)
+    world = World.World(4,10)
 
-    env = Enviroment.Enviroment((100,100), 100)
+    env = Enviroment.Enviroment((100,100), 5)
     env.foodValue = 50 
     env.setFood()
 
-    agent_list = [Agent.Agent(env, 10) for i in range(0,100)]
+    agent_list = [Agent.Agent(env, 10) for i in range(0,10)]
     pre_agent_list_len = len(agent_list)
 
     agent_list = engine.run(agent_list, env, world)
