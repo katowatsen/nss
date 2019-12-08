@@ -9,8 +9,9 @@ def test_run():
     np.random.seed(0)
 
     engine = Engine.Engine()
-    world = World.World(2,5)
+    world = World.World(2,2)
     env = Enviroment.Enviroment((100,100), 100)
+    env.foodValue = 400
 
     env.setFood()
     agent_list = [Agent.Agent(env, 10) for i in range(0,1)]
