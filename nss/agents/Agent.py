@@ -41,9 +41,12 @@ class Agent():
         self.travel(env, self.search(env))
 
         if world.tick == world.totalTicks:
-            return self.reproduce(agent_list, 2, env, 10, 0.1)
+            reproduced = self.reproduce(50, env, 10, 0.1)
+            reproduced.append(self)
+            return reproduced
 
-        return agent_list
+        return self
+
 
     def update(self):
         pass
@@ -98,13 +101,15 @@ class Agent():
             env.removeFoodAtPosition(self.position)
             self.curEnergy += env.foodValue
 
-    def reproduce(self, agent_list, reproduceCost, env, MAX_mass, MAX_deviation):
+    def reproduce(self, reproduceCost, env, MAX_mass, MAX_deviation):
+
+        reproduced = []
 
         while self.curEnergy >= self.reqEnergy + reproduceCost:
-            agent_list.append(self.mutateChild(Agent(env, MAX_mass), MAX_deviation))
+            reproduced.append(self.mutateChild(Agent(env, MAX_mass), MAX_deviation))
             self.curEnergy -= reproduceCost
 
-        return agent_list
+        return reproduced 
 
     def mutateChild(self,child, MAX_deviation):
         child.genome = self.genome
