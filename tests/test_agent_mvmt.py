@@ -45,7 +45,7 @@ def test_search_square_far():
     t_agent.genome["search"] = 5 
     t_agent.position = (3,3)
 
-    assert t_agent.search(env)[0] == (0,0)
+    assert t_agent.parr_search(env)[0] == (0,0)
 
 def test_search_square_mid():
     np.random.seed(0)
@@ -56,7 +56,7 @@ def test_search_square_mid():
     t_agent.genome["search"] = 3 
     t_agent.position = (0,0)
 
-    assert t_agent.search(env)[0] == (2,2)
+    assert t_agent.parr_search(env)[0] == (2,2)
 
 def test_search_square_fail():
     np.random.seed(0)
@@ -67,7 +67,7 @@ def test_search_square_fail():
     t_agent.genome["search"] = 0
     t_agent.position = (3,3)
 
-    assert t_agent.search(env) == None 
+    assert t_agent.parr_search(env) == None 
 
 def test_search_rect_far():
     np.random.seed(0)
@@ -78,7 +78,7 @@ def test_search_rect_far():
     t_agent.genome["search"] = 6 
     t_agent.position = (5,3)
 
-    assert t_agent.search(env)[0] == (0,0)
+    assert t_agent.parr_search(env)[0] == (0,0)
 
 def test_search_rect_mid():
     np.random.seed(0)
@@ -89,7 +89,7 @@ def test_search_rect_mid():
     t_agent.genome["search"] = 6 
     t_agent.position = (5,3)
 
-    assert t_agent.search(env)[0] == (3,1)
+    assert t_agent.parr_search(env)[0] == (3,1)
 
 def test_search_rect_multi():
     np.random.seed(0)
@@ -101,7 +101,7 @@ def test_search_rect_multi():
     t_agent.genome["search"] = 100
     t_agent.position = (5,3)
 
-    assert t_agent.search(env)[0] == (5,4)
+    assert t_agent.parr_search(env)[0] == (5,4)
 
 
 def test_search_rect_fail():
@@ -113,7 +113,7 @@ def test_search_rect_fail():
     t_agent.genome["search"] = 0 
     t_agent.position = (5,3)
 
-    assert t_agent.search(env) == None
+    assert t_agent.parr_search(env) == None
 
 def test_search_rect_far_big():
     np.random.seed(0)
@@ -121,10 +121,10 @@ def test_search_rect_far_big():
     env.map[0][0] = 1
 
     t_agent = Agent.Agent(env, 0)
-    t_agent.genome["search"] = 3000 
-    t_agent.position = (1000,2000)
+    t_agent.genome["search"] = 5000
+    t_agent.position = (900,1900)
 
-    assert t_agent.search(env)[0] == (0,0)
+    assert t_agent.parr_search(env)[0] == (0,0)
 
 def test_search_rect_on_big():
     np.random.seed(0)
@@ -135,7 +135,7 @@ def test_search_rect_on_big():
     t_agent.genome["search"] = 3000 
     t_agent.position = (0,0)
 
-    assert t_agent.search(env)[0] == (0,0)
+    assert t_agent.parr_search(env)[0] == (0,0)
 
 def test_travel_instant():
     env = Enviroment.Enviroment((100,100),1)
