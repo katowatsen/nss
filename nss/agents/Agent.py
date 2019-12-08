@@ -42,7 +42,7 @@ class Agent():
         if env.foodAtAgent(self):
             self.eatFood(env)
 
-        self.travel(env, self.search(env))
+        self.travel(env, self.parr_search(env))
 
         if world.tick == world.totalTicks:
             return self.reproduce(agent_list, 2, env, 10, 0.1)
@@ -51,6 +51,7 @@ class Agent():
 
     def search(self, env):
         #should be performed if food pos != agent pos
+        #paralize
         seenFood = []
         for row in range(0, env.dim[0]):
             for col in range(0, env.dim[1]):
@@ -67,6 +68,78 @@ class Agent():
         else:
             return None
             
+    def parr_search(self, env):
+        def evalPos(env,row,col, seenFood):
+
+            if row >= env.map.shape[0]:
+                row = env.map.shape[0]-1
+
+            if col >= env.map.shape[1]:
+                col = env.map.shape[1]-1
+
+            if row <= 0:
+                row = 0
+
+            if col <= 0:
+                col = 0
+
+            if env.map[row][col] >= 1:
+                distance = math.hypot(
+                math.fabs(row - self.position[0]),
+                math.fabs(col - self.position[1]))
+
+                seenFood.append(((row,col), distance))
+                return seenFood
+
+            return seenFood
+
+        a = 1
+
+        seenFood = []
+        x = int(self.position[0]+.5)
+        y = int(self.position[1]+.5)
+
+        while a <= self.genome["search"]:
+            if len(seenFood) > 0: 
+                break
+
+
+            x_bound = (x-a, x+a)
+            y_bound = (y-a, y+a)
+
+            if x_bound[0] < 0 and y_bound[0] < 0 and x_bound[1] >= env.map.shape[0] and y_bound[1] >= env.map.shape[1]:
+                return None
+
+            for row in range(x_bound[0], x_bound[1]+1):
+                for col in y_bound:
+                    evalPos(env, row, col, seenFood)
+
+            for col in range(y_bound[0]+1, y_bound[1]):
+                for row in x_bound:
+                    evalPos(env, row, col, seenFood)
+
+            a+=1
+
+        if len(seenFood) > 0:
+            return sorted(seenFood, key = lambda e: e[1])[0]
+        else:
+            return None
+
+    def dictSearch(self, env):
+
+        closestFood = None
+
+        for food in env.map:
+            if env.map[food] > 0:
+                distance = math.hypot(
+                math.fabs(food[0] - self.position[0]),
+                math.fabs(food[1] - self.position[1]))
+
+                if distance<= self.genome["search"] and (closestFood is None or distance < closestFood[1]):
+                    closestFood = (food, distance)
+
+        return closestFood
+
     def travel(self, env, food):
         if food == None:
             return self.wander()
@@ -90,7 +163,8 @@ class Agent():
                     (food[0][1] - self.position[1])/
                     (food[0][0] - self.position[0]))
 
-            x = math.fabs(dis * math.cos(theta) + food[0][0] - self.position[0])
+            #is this correct?
+            x = math.fabs(dis * math.sin(theta) + food[0][0] - self.position[0])
             y = math.fabs(dis * math.cos(theta) + food[0][1] - self.position[1])
 
             self.position[0] = x
