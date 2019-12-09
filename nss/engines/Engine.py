@@ -1,4 +1,4 @@
-from multiprocessing import Pool
+import multiprocessing as mp
 from itertools import chain 
 
 class Engine():
@@ -7,7 +7,7 @@ class Engine():
         pass
 
     def run(self, agent_list, env, world):
-        pool = Pool(4)
+        pool = mp.Pool(mp.cpu_count())
 
         while world.cycle <= world.totalCycles:
             env.setFood()
