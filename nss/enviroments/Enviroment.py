@@ -38,7 +38,6 @@ class Enviroment:
             return False
 
     def removeFoodAtPosition(self, position):
-
         
         if self.map.get(tuple(position)) == 0:
             del self.map[tuple(position)]
