@@ -146,7 +146,7 @@ def test_travel_instant():
     t_agent = Agent.Agent(env, 0)
     t_agent.genome["travel"] = 10000
 
-    t_agent.travel(env, ([0,0],50))
+    t_agent.travel(((0,0),10)) 
     assert t_agent.position == [0,0]
     
 def test_travel_partial():
@@ -157,7 +157,7 @@ def test_travel_partial():
     t_agent.genome["travel"] = 50 
     t_agent.position = [100,100]
 
-    t_agent.travel(env, ([0,0],70.71))
+    t_agent.travel(((0,0),70.71))
     assert [int(t_agent.position[0]),int(t_agent.position[1])] == [64,64]
 
 def test_travel_null():
@@ -168,5 +168,5 @@ def test_travel_null():
     t_agent.position = [1,1]
     t_agent.genome["travel"] = 0
 
-    t_agent.travel(env, ([0,0],2))
+    t_agent.travel(((0,0),1))
     assert t_agent.position == [1,1]

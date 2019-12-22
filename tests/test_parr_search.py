@@ -10,7 +10,7 @@ def test_search_timing():
     np.random.seed(0)
 
     world = World.World(100,100)
-    env = Enviroment.Enviroment((1000,1000), 200)
+    env = Enviroment.Enviroment((1000,1000), 2000)
 
     env.foodValue = 100 
     env.setFood()
