@@ -39,9 +39,6 @@ class Agent():
         self.position = [np.random.random_sample() * env.dim[0],
                          np.random.random_sample() * env.dim[1]]
 
-    def act(self, env, world, agent_list):
-        return self.determine_next(env, world, agent_list)
-
     def determine_next(self, env, world, agent_list):
         '''tasks should be parralizable'''
         #moralize
