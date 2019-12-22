@@ -1,3 +1,4 @@
+
 class World():
 
     def __init__(self, totalCycles, totalTicks):
@@ -14,3 +15,4 @@ class World():
 
     def updateCycle(self):
         self.cycle += 1
+
