@@ -22,4 +22,5 @@ def run():
 
     agent_list = engine.run(agent_list, env, world)
 
-run()
+if __name__ == '__main__':
+    run()
