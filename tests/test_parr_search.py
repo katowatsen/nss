@@ -15,7 +15,7 @@ def test_search_timing():
     env.foodValue = 100 
     env.setFood()
 
-    agent_list = [Agent.Agent(env, 10) for i in range(0,10000)]
+    agent_list = [Agent.Agent(env,world, 10) for i in range(0,10000)]
 
     start_reg = time()
     for agent in agent_list:
