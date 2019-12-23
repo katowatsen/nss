@@ -22,7 +22,6 @@ class Engine():
         while world.cycle <= world.totalCycles:
             env.removeAllFood()
             env.setFood()
-            #print(len(agent_list))
 
             avg = 0
 
@@ -60,7 +59,6 @@ class Engine():
                          }) 
 
             while world.tick <= world.totalTicks:
-                #print(world.tick)
 
                 agent_list = pool.map(self.worker_determine_next, ((agent, env, world, agent_list) for agent in agent_list))
 
@@ -68,6 +66,7 @@ class Engine():
                 compiled_list = []
                 for agent in agent_list:
                     compiled_list.append(agent.update_strat(env, world, agent_list))
+
 
                 #tests if complied list has multiple dimentions
                 if len(compiled_list) > 0 and isinstance(

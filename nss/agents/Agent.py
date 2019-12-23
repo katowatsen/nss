@@ -25,8 +25,6 @@ class Agent():
 
                   }
 
-        self.pre_genome = self.genome.copy()
-
         self.curEnergy = 0
         self.reqEnergy = self.genome["mass"] * 0.5 *math.pow(self.genome["travel"], 2) + self.genome["search"]
 
