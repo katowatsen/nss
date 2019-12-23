@@ -8,10 +8,11 @@ import numpy as np
 
 def test_reproduce():
     env = Enviroment((5,5),2)
+    world = World(10,10)
     agent_list = [Agent(env, world, 2) for i in range(0,1)]
     agent_list[0].curEnergy = 10
     agent_list[0].reqEnergy = 2
-    reproduced = agent_list[0].reproduce(env,2, 2, 0.01)
+    reproduced = agent_list[0].reproduce(env,world, 2, 2, 0.01)
 
     for agent in reproduced:
         agent_list.append(agent)
@@ -20,10 +21,11 @@ def test_reproduce():
 
 def test_mutateChild():
     env = Enviroment((5,5),2)
+    world = World(10,10)
     np.random.seed(10)
     t_agent = Agent(env,world, 2)
 
-    assert t_agent.genome != t_agent.mutateChild(Agent(env, 2), 0.1)
+    assert t_agent.genome != t_agent.mutateChild(Agent(env,world, 2), 0.1)
 
 def test_timings():
     np.random.seed(0)
