@@ -177,12 +177,24 @@ def test_travel_partial():
 
 def test_travel_null():
     world = World(10,10)
-    env = Enviroment.Enviroment((2,2),1)
+    env = enviroment.enviroment((2,2),1)
     env.map[(0,0)] = 1
 
-    t_agent = Agent.Agent(env, world,0)
+    t_agent = agent.agent(env, world,0)
     t_agent.position = [1,1]
     t_agent.genome["travel"] = 0
 
     t_agent.travel(((0,0),1))
     assert t_agent.position == [1,1]
+
+def test_wander():
+    world = World(10,10)
+    env = Enviroment.Enviroment((10,10),0)
+
+    t_agent = Agent.Agent(env, world, 0)
+    t_agent.position = [0,0]
+    t_agent.wander(env)
+
+    assert t_agent.position != [0,0]
+
+
