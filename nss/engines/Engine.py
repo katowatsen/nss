@@ -53,10 +53,22 @@ class Engine():
                          "length": len(agent_list), 
                          "reqEnergy": avg,
                          "avgSearch": avg_genome['search'],
-                         "avgTravel": avg_genome['travel'],
+                         "avgSpeed": avg_genome['speed'],
                          "avgMass": avg_genome['mass'],
                          "avgAltruism": avg_genome['altruism']
                          }) 
+
+            #pairs interaction partners
+            i = 1
+            for agent in agent_list:
+                #tests for last agent in agent list 
+                if i == len(agent_list):
+                    agent.partner = agent_list[0]
+
+                else:
+                    agent.partner = agent_list[i]
+
+                i += 1
 
             while world.tick <= world.totalTicks:
 
