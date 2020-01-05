@@ -8,6 +8,7 @@ class Enviroment:
         self.foodAmount = foodAmount
         self.map = {}
         self.foodValue = 50
+        self.foodPool = 0
 
 
     def setFood(self):
