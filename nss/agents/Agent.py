@@ -20,7 +20,8 @@ class Agent():
                   "mass": np.random.random_sample()* MAX_mass,
 
                   #altruism is a probability that one will act altrusticly
-                  "altruism": np.random.random_sample() 
+                  "altruism": np.random.random_sample() / 10
+                  
 
                   }
 
@@ -29,6 +30,10 @@ class Agent():
 
         self.fitness = None #might remove
         self.distanceTraveled = 0 
+        self.closestFood = None
+        self.partner = None
+
+        self.reputation = None
 
 
         '''self position is a random possible coordinate on enviroment,
@@ -39,7 +44,15 @@ class Agent():
     def determine_next(self, env, world, agent_list):
         '''tasks should be parralizable'''
         #moralize
-        self.search(self.search(env)) 
+        #if world.tick == 1:
+
+        self.travel(self.search(env), env)
+
+        if np.random.random_sample() < self.genome["altruism"]:
+            self.cooperate(agent_list)
+
+        else:
+            self.defect(agent_list)
 
         return self
 
@@ -75,16 +88,22 @@ class Agent():
             math.fabs(food[0] - self.position[0]),
             math.fabs(food[1] - self.position[1]))
 
-            if distance<= self.genome["search"] and (closestFood is None or distance < closestFood[1]):
-                closestFood = (food, distance)
+            if self.partner != None:
+
+                if distance <= self.genome["search"] or distance <= self.partner.genome["search"] and (closestFood is None or distance < closestFood[1]):
+                    closestFood = (food, distance)
+
+            else:
+                if distance <= self.genome["search"] and (closestFood is None or distance < closestFood[1]):
+                    closestFood = (food, distance)
 
         return closestFood
 
-    def search(self, nextPosition):
+    def travel(self, nextPosition, env):
         if nextPosition == None:
-            self.wander()
+            self.wander(env)
 
-        elif self.genome["search"] >= nextPosition[1]:
+        elif self.genome["speed"] >= nextPosition[1]:
             self.position = list(nextPosition[0])
 
             self.distanceTraveled += math.hypot(
@@ -92,10 +111,10 @@ class Agent():
                 self.position[1]-nextPosition[0][1])
 
         elif nextPosition[0][0] == self.position[0]:
-            self.position[1] += self.genome["search"]
+            self.position[1] += self.genome["speed"]
 
         else:
-            distance = self.genome["search"] 
+            distance = self.genome["speed"] 
             theta = math.atan2(
                     (nextPosition[0][1] - self.position[1]),
                     (nextPosition[0][0] - self.position[0]))
@@ -133,7 +152,7 @@ class Agent():
             if child.genome[k] < 0:
                 child.genome[k] = np.random.random_sample()*MAX_deviation
 
-        child.reqEnergy = child.genome["mass"] * 0.5 *math.pow(child.genome["search"], 2) + child.genome["search"]
+        child.reqEnergy = child.genome["mass"] * 0.5 *math.pow(child.genome["speed"], 2) + child.genome["search"]
 
         return child
 
@@ -157,12 +176,22 @@ class Agent():
             randPoint = circm[np.random.randint(len(circm))]
             self.position = list(randPoint)
 
-    def cooperate(self):
+    def cooperate(self, agent_list):
+        #agents will communicate with each other by defalt
+
+        #self.shareFood()
         pass
 
+    def defect(self, agent_list):
+        self.removePartnerAssignment(agent_list)
 
-    def defect(self):
+    def shareFood(self):
         pass
+
+    def removePartnerAssignment(self, agent_list):
+        for agent in agent_list:
+            if agent.partner is self:
+                agent.partner = None
 
     def moralize(self):
         pass
