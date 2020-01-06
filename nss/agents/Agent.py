@@ -192,7 +192,7 @@ class Agent():
 
     def removePartnerAssignment(self, agent_list):
         for agent in agent_list:
-            if agent.partner is self:
+            if agent.partner.genome == self.genome:
                 agent.partner = None
 
     def moralize(self):
