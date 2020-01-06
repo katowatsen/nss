@@ -59,16 +59,20 @@ class Engine():
                          }) 
 
             #pairs interaction partners
-            i = 1
             for agent in agent_list:
+                agent.partner = agent_list[0]
+
+            i = 1
+            #for agent in agent_list:
                 #tests for last agent in agent list 
-                if i == len(agent_list):
-                    agent.partner = agent_list[0]
+            #    if i == len(agent_list):
+            #        agent.partner = agent_list[0]
 
-                else:
-                    agent.partner = agent_list[i]
+            #    else:
 
-                i += 1
+            #        agent.partner = agent_list[i]
+
+            #    i += 1
 
             while world.tick <= world.totalTicks:
 

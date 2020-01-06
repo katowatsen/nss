@@ -44,17 +44,18 @@ class Agent():
     def determine_next(self, env, world, agent_list):
         '''tasks should be parralizable'''
         #moralize
-        #if world.tick == 1:
+        if world.tick == 1:
+            if np.random.random_sample() < self.genome["altruism"]:
+                self.cooperate(agent_list)
+
+            else:
+                self.defect(agent_list)
 
         self.travel(self.search(env), env)
 
-        if np.random.random_sample() < self.genome["altruism"]:
-            self.cooperate(agent_list)
-
-        else:
-            self.defect(agent_list)
-
         return self
+
+
 
 
 
@@ -88,13 +89,13 @@ class Agent():
             math.fabs(food[0] - self.position[0]),
             math.fabs(food[1] - self.position[1]))
 
-            if self.partner != None:
+            #if self.partner != None:
 
-                if distance <= self.genome["search"] or distance <= self.partner.genome["search"] and (closestFood is None or distance < closestFood[1]):
-                    closestFood = (food, distance)
+                #if distance <= self.genome["search"] or distance <= self.partner.genome["search"] and (closestFood is None or distance < closestFood[1]):
+                #    closestFood = (food, distance)
 
-            else:
-                if distance <= self.genome["search"] and (closestFood is None or distance < closestFood[1]):
+            #else:
+            if distance <= self.genome["search"] and (closestFood is None or distance < closestFood[1]):
                     closestFood = (food, distance)
 
         return closestFood
@@ -183,7 +184,8 @@ class Agent():
         pass
 
     def defect(self, agent_list):
-        self.removePartnerAssignment(agent_list)
+        #self.removePartnerAssignment(agent_list)
+        pass
 
     def shareFood(self):
         pass
