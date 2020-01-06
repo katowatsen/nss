@@ -101,7 +101,7 @@ class Agent():
 
     def travel(self, nextPosition, env):
         if nextPosition == None:
-            self.wander(env)
+            return self.wander(env)
 
         elif self.genome["speed"] >= nextPosition[1]:
             self.position = list(nextPosition[0])
@@ -124,6 +124,26 @@ class Agent():
 
             self.distanceTraveled += distance
             
+    def wander(self, env):
+        circm = []
+
+        angles = np.radians(list(range(0,360)))
+
+        for angle in angles:
+            point = [
+                self.position[0] + self.genome["speed"] * math.cos(angle),
+                self.position[1] + self.genome["speed"] * math.sin(angle)]
+
+            point.append(math.hypot(point[1]-self.position[1], point[0]-self.position[0]))
+
+            if env.dim[0] >= point[0] >= 0 and env.dim[1] >= point[1] >= 0:
+                circm.append(point)
+
+
+        if len(circm) != 0:
+            randPoint = circm[np.random.randint(len(circm))]
+            self.position = list(randPoint)
+
     def eatFood(self, env):
         while env.foodAtPosition(self.position):
             env.removeFoodAtPosition(self.position)
@@ -155,26 +175,6 @@ class Agent():
         child.reqEnergy = child.genome["mass"] * 0.5 *math.pow(child.genome["speed"], 2) + child.genome["search"]
 
         return child
-
-
-    def wander(self, env):
-        circm = []
-
-        angles = np.radians(range(0,360))
-
-        for angle in angles:
-            point = [
-                self.position[0] + self.genome["speed"] * math.cos(angle),
-                self.position[1] + self.genome["speed"] * math.sin(angle)]
-            point.append(math.hypot(point[1]-self.position[1], point[0]-self.position[0]))
-
-            if env.dim[0] >= point[0] >= 0 and env.dim[1] >= point[1] >= 0:
-                circm.append(point)
-
-
-        if len(circm) != 0:
-            randPoint = circm[np.random.randint(len(circm))]
-            self.position = list(randPoint)
 
     def cooperate(self, agent_list):
         #agents will communicate with each other by defalt
