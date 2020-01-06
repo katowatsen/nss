@@ -89,13 +89,13 @@ class Agent():
             math.fabs(food[0] - self.position[0]),
             math.fabs(food[1] - self.position[1]))
 
-            #if self.partner != None:
+            if self.partner != None:
 
-                #if distance <= self.genome["search"] or distance <= self.partner.genome["search"] and (closestFood is None or distance < closestFood[1]):
-                #    closestFood = (food, distance)
+                if distance <= self.genome["search"] or distance <= self.partner.genome["search"] and (closestFood is None or distance < closestFood[1]):
+                    closestFood = (food, distance)
 
-            #else:
-            if distance <= self.genome["search"] and (closestFood is None or distance < closestFood[1]):
+            else:
+                if distance <= self.genome["search"] and (closestFood is None or distance < closestFood[1]):
                     closestFood = (food, distance)
 
         return closestFood

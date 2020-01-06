@@ -59,20 +59,18 @@ class Engine():
                          }) 
 
             #pairs interaction partners
-            for agent in agent_list:
-                agent.partner = agent_list[0]
 
             i = 1
-            #for agent in agent_list:
+            for agent in agent_list:
                 #tests for last agent in agent list 
-            #    if i == len(agent_list):
-            #        agent.partner = agent_list[0]
+                if i == len(agent_list):
+                    agent.partner = copy.copy(agent_list[0])
 
-            #    else:
+                else:
 
-            #        agent.partner = agent_list[i]
+                    agent.partner = copy.copy(agent_list[i])
 
-            #    i += 1
+                i += 1
 
             while world.tick <= world.totalTicks:
 
