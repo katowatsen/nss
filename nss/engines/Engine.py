@@ -22,6 +22,7 @@ class Engine():
         while world.cycle <= world.totalCycles:
             env.removeAllFood()
             env.setFood()
+            env.foodPool = 0
 
             avg = 0
 
@@ -68,7 +69,8 @@ class Engine():
 
                 else:
 
-                    agent.partner = copy.copy(agent_list[i])
+                    agent.partner = copy.copy(
+                        agent_list[i].interact(world, env))
 
                 i += 1
 
@@ -76,8 +78,13 @@ class Engine():
 
                 agent_list = pool.map(self.worker_determine_next, ((agent, env, world, agent_list) for agent in agent_list))
 
+                #add food to foodPool
+
+                for agent in agent_list:
+                    agent.interact(world, env)
                 #update 
                 compiled_list = []
+
                 for agent in agent_list:
                     compiled_list.append(agent.update_strat(env, world, agent_list))
 
@@ -94,7 +101,6 @@ class Engine():
                     agent_list = compiled_list.copy()
 
                 world.updateTick()
-
 
 
             world.resetTick()
@@ -116,5 +122,3 @@ class Engine():
     def worker_determine_next(self, arg):
         agent, env, world, agent_list = arg
         return agent.determine_next(env, world, agent_list)
-
-

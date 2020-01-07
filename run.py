@@ -11,7 +11,7 @@ def run():
     np.random.seed(100)
 
     engine = Engine.Engine()
-    world = World.World(10000,5)
+    world = World.World(100000,4)
 
     env = Enviroment.Enviroment((100,100), 60)
     env.foodValue = 90 

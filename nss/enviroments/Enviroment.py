@@ -49,5 +49,3 @@ class Enviroment:
     def removeAllFood(self):
 
         self.map.clear()
-
-

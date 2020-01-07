@@ -26,13 +26,12 @@ class Agent():
                   }
 
         self.curEnergy = 0
-        self.reqEnergy = self.genome["mass"] * 0.5 *math.pow(self.genome["speed"], 2) + self.genome["search"]
+        self.reqEnergy = self.genome["mass"] * 0.5 *math.pow(self.genome["speed"], 2) + self.genome["search"] 
 
         self.fitness = None #might remove
         self.distanceTraveled = 0 
         self.closestFood = None
         self.partner = None
-
         self.reputation = None
 
 
@@ -44,18 +43,10 @@ class Agent():
     def determine_next(self, env, world, agent_list):
         '''tasks should be parralizable'''
         #moralize
-        if world.tick == 1:
-            if np.random.random_sample() < self.genome["altruism"]:
-                self.cooperate(agent_list)
-
-            else:
-                self.defect(agent_list)
 
         self.travel(self.search(env), env)
 
         return self
-
-
 
 
 
@@ -68,7 +59,8 @@ class Agent():
             self.eatFood(env)
 
         if world.tick == world.totalTicks:
-            sub_agent_list = self.reproduce(env,world, 10, self.MAX_mass, 5)
+            self.curEnergy += env.foodPool/len(agent_list)
+            sub_agent_list = self.reproduce(env,world,10,self.MAX_mass,1)
             '''kills current agent if it does not have
             required energy at the end of cycle'''
             
@@ -173,27 +165,52 @@ class Agent():
             if child.genome[k] < 0:
                 child.genome[k] = np.random.random_sample()*MAX_deviation
 
+
         child.reqEnergy = child.genome["mass"] * 0.5 *math.pow(child.genome["speed"], 2) + child.genome["search"]
+        if child.genome["altruism"] > 10:
+            child.genome["altruism"] = 10
 
         return child
 
-    def cooperate(self, agent_list):
-        #agents will communicate with each other by defalt
+    def interact(self, world, env):
+        if np.random.random_sample() < self.genome["altruism"]:
+            isAltrustic = True
 
-        #self.shareFood()
+        else:
+            isAltrustic = False
+
+        #determines whether to share food or communicate
+        if world.tick == 1:
+
+            return self.communicate(isAltrustic)
+
+        elif world.tick == world.totalTicks:
+
+             self.shareFood(env, isAltrustic)
+
+    def communicate(self, isAltrustic):
+        if isAltrustic == True:
+            return self
+        else:
+            return None
+
+    def shareFood(self, env, isAltrustic):
+        if isAltrustic == True:
+            self.cooperate(env)
+
+        else:
+            self.defect(env)
+
+    def cooperate(self, env):
+        if self.curEnergy >= self.reqEnergy:
+            env.foodPool += (self.curEnergy - self.reqEnergy) / 2
+            self.curEnergy -= (self.curEnergy - self.reqEnergy) / 2
+
+
+    def defect(self, env):
+        # does nothing
         pass
 
-    def defect(self, agent_list):
-        #self.removePartnerAssignment(agent_list)
-        pass
-
-    def shareFood(self):
-        pass
-
-    def removePartnerAssignment(self, agent_list):
-        for agent in agent_list:
-            if agent.partner.genome == self.genome:
-                agent.partner = None
 
     def moralize(self):
         pass
