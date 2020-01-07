@@ -26,7 +26,7 @@ class Agent():
                   }
 
         self.curEnergy = 0
-        self.reqEnergy = self.genome["mass"] * 0.5 *math.pow(self.genome["speed"], 2) + self.genome["search"] 
+        self.reqEnergy = self.genome["mass"] * 0.5 *math.pow(self.genome["speed"], 2) + self.genome["search"]
 
         self.fitness = None #might remove
         self.distanceTraveled = 0 
