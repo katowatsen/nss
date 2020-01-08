@@ -20,8 +20,14 @@ class Agent():
                   "mass": np.random.random_sample()* MAX_mass,
 
                   #altruism is a probability that one will act altrusticly
-                  "altruism": np.random.random_sample() / 10
-                  
+                  "altruism": np.random.random_sample(),
+
+                
+                  #probability that agent will sense defection
+                  "senseDefect": np.random.random_sample(),
+
+                  #probability that agent will sense defection in the location of food
+                  "senseCommunicate": np.random.random_sample(),
 
                   }
 
@@ -32,7 +38,7 @@ class Agent():
         self.distanceTraveled = 0 
         self.closestFood = None
         self.partner = None
-        self.reputation = None
+        self.reputation = 0 
 
 
         '''self position is a random possible coordinate on enviroment,
@@ -54,22 +60,28 @@ class Agent():
 
         if env.foodAtPosition(self.position):
             #make sure another agent isn't at this position
-            #if another agent is at this position:
+            #if another agent is at this position-
             #do altrustic/selfish behavior
+
+            for other_agent in agent_list:
+                if other_agent.position == self.position and id(other_agent) != id(self):
+                    self.negotiate(other_agent, world, env)
+
             self.eatFood(env)
 
+        #agent reproduces and if conditions are not satisified, is removed from model
         if world.tick == world.totalTicks:
             self.curEnergy += env.foodPool/len(agent_list)
-            sub_agent_list = self.reproduce(env,world,10,self.MAX_mass,1)
+            reproducedAgents = self.reproduce(env,world,10,self.MAX_mass,0.5)
             '''kills current agent if it does not have
             required energy at the end of cycle'''
             
-            if self.curEnergy >= self.reqEnergy and self.reqEnergy > 0:
-                sub_agent_list.insert(0, self)
+            if self.curEnergy < self.reqEnergy:
+                Agent.removeAgent(self, world)
 
-            return sub_agent_list
+            return reproducedAgents
 
-        return [self]
+        return self
 
     def search(self, env):
 
@@ -163,30 +175,81 @@ class Agent():
             a = [-1,1]) * np.random.random_sample() * MAX_deviation
 
             if child.genome[k] < 0:
-                child.genome[k] = np.random.random_sample()*MAX_deviation
+                child.genome[k] = 0.00001
 
 
         child.reqEnergy = child.genome["mass"] * 0.5 *math.pow(child.genome["speed"], 2) + child.genome["search"]
-        if child.genome["altruism"] > 10:
-            child.genome["altruism"] = 10
+        if child.genome["altruism"] > 1:
+            child.genome["altruism"] = 1
 
         return child
 
-    def interact(self, world, env):
-        if np.random.random_sample() < self.genome["altruism"]:
-            isAltrustic = True
+    def negotiate(self, other_agent, world, env):
+        thisAction = self.determineAltruism()
+        otherAction = other_agent.determineAltruism()
+
+        if thisAction == otherAction and thisAction == True:
+            #split food
+            self.splitFood(other_agent,  env)
+
+        elif thisAction == False and otherAction == True:
+            self.eatFood
+            #this agent takes food
+
+        elif thisAction == True and otherAction == False:
+            #the other agent takes food
+            other_agent.eatFood(env)
 
         else:
-            isAltrustic = False
+            #fights over food
+            if self.genome["mass"] > other_agent.genome["mass"]:
+                self.eatFood(env)
+                #remove agent from list
+                self.eatAgent(world, other_agent)
 
-        #determines whether to share food or communicate
-        if world.tick == 1:
+            elif self.genome["mass"] < other_agent.genome["mass"]:
+                other_agent.eatFood(env)
+                #remove agent from list
+                other_agent.eatAgent(world, self)
 
-            return self.communicate(isAltrustic)
+            else:
+                #split food
+                multiplier = self.splitFood(other_agent,  env)
 
-        elif world.tick == world.totalTicks:
+                #removes energy from each agent as toll for fighting...
+                #results in each agent getting only 1/4 of the food value
+                self.curEnergy -= env.foodValue/4 * multiplier
+                other_agent.curEnergy -= env.foodValue/4 * multiplier
 
-             self.shareFood(env, isAltrustic)
+    def splitFood(self, other_agent, env):
+        #accounts for multiple instances of food in one location
+        
+        multiplier = 0 
+        preFood = self.curEnergy
+        while(env.foodAtPosition(self.position)):
+
+            self.eatFood(env)
+            foodValue = self.curEnergy - preFood
+
+            self.curEnergy -= foodValue/2
+            other_agent.curEnergy += foodValue/2
+            multiplier += 1
+
+        return multiplier
+
+    def eatAgent(self, world, other_agent):
+        self.curEnergy += other_agent.curEnergy
+        Agent.removeAgent(other_agent, world)
+
+    def removeAgent(agent, world):
+        world.removeAgentsList.append(agent)
+
+    def determineAltruism(self):
+
+        if np.random.random_sample() < self.genome["altruism"]:
+            return True
+        else:
+            return False 
 
     def communicate(self, isAltrustic):
         if isAltrustic == True:
@@ -206,10 +269,12 @@ class Agent():
             env.foodPool += (self.curEnergy - self.reqEnergy) / 2
             self.curEnergy -= (self.curEnergy - self.reqEnergy) / 2
 
+        self.reputation += 1
+
 
     def defect(self, env):
         # does nothing
-        pass
+        self.reputation -= 1
 
 
     def moralize(self):
