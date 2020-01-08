@@ -16,7 +16,7 @@ class Analysis():
         if os.path.exists(self.fileName):
             os.remove(self.fileName)
 
-    def write(self, data):
+    def writeHeaders(self, data):
 
         keys = data[0].keys()
 
@@ -24,7 +24,15 @@ class Analysis():
 
             dict_writer = csv.DictWriter(CSV_out, keys)
             dict_writer.writeheader()
+            #dict_writer.writerows(data)
+
+    def writeRow(self, data):
+        keys = data[0].keys()
+
+        with open(self.fileName, 'a') as CSV_out:
+            dict_writer = csv.DictWriter(CSV_out, keys)
             dict_writer.writerows(data)
+
 
     def read(self):
         try:
