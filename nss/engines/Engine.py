@@ -32,7 +32,8 @@ class Engine():
             env.foodPool = 0
 
             #averages genome attributes of the agents
-            avg = 0
+            avgNrg = 0
+            avgRep = 0
 
             if len(agent_list) != 0:
 
@@ -40,19 +41,23 @@ class Engine():
 
             for agent in agent_list:
                 agent.curEnergy = 0
-                avg += agent.reqEnergy
+                avgNrg += agent.reqEnergy
                 for k in agent.genome.keys():
 
                     avg_genome[k] += agent.genome[k]
 
+                avgRep += agent.reputation
+
             if len(agent_list) != 0:
-                avg = avg / len(agent_list)
+                avgNrg = avgNrg / len(agent_list)
+                avgRep = avgRep/len(agent_list)
                 for k in agent.genome.keys():
 
                     avg_genome[k] += agent.genome[k] 
 
             else:
-                avg = "N/A"
+                avgRep = "N/A"
+                avgNrg = "N/A"
 
             for key in avg_genome.keys():
                 avg_genome[key] = avg_genome[key] / len(agent_list)
@@ -61,17 +66,16 @@ class Engine():
             #prepares data for output 
             data.append({"cycle": world.cycle,
                          "length": len(agent_list), 
-                         "reqEnergy": avg,
-                         "avgSearch": avg_genome['search'],
-                         "avgSpeed": avg_genome['speed'],
-                         "avgMass": avg_genome['mass'],
-                         "avgAltruism": avg_genome['altruism']
+                         "reqEnergy" : avgNrg,
+                         "avgSearch" : avg_genome['search'],
+                         "avgSpeed" : avg_genome['speed'],
+                         "avgMass" : avg_genome['mass'],
+                         "avgAltruism" : avg_genome['altruism'],
+                         "avgReputation" : avgRep
                          }) 
 
             if world.cycle == 1:
                 analyze.writeHeaders(data)
-
-
 
 
             #pairs interaction partners
@@ -103,7 +107,7 @@ class Engine():
                 if world.tick == world.totalTicks:
                     #add food to foodPool
                     for agent in agent_list:
-                        agent.shareFood(env, agent.determineAltruism())
+                        agent.shareFood(env, agent_list, agent.determineAltruism())
 
                 #update 
                 compiled_list = []
@@ -126,7 +130,6 @@ class Engine():
                     agent_list = copy.copy(compiled_list)
 
                 world.updateTick()
-
 
             analyze.writeRow(data)
             data.clear()
