@@ -79,13 +79,18 @@ class Engine():
             i = 1
             for agent in agent_list:
                 #tests for last agent in agent list 
-                if i == len(agent_list):
-                    agent.partner = copy.copy(agent_list[0])
+                if i % 2 == 0:
+                    agent.partner = copy.copy(
+                    agent_list[i-2].communicate(
+                    agent_list[i-2].determineAltruism()))
+
+                elif i == len(agent_list):
+                    agent.partner = None
 
                 else:
-
                     agent.partner = copy.copy(
-                        agent_list[i].communicate(agent_list[i].determineAltruism()))
+                    agent_list[i].communicate(
+                    agent_list[i].determineAltruism()))
 
                 i += 1
 
