@@ -200,9 +200,9 @@ class Agent():
             self.splitFood(other_agent,  env)
 
         elif thisAction == False and otherAction == True:
-            self.eatFood
             #this agent takes food
-
+            self.eatFood
+            
         elif thisAction == True and otherAction == False:
             #the other agent takes food
             other_agent.eatFood(env)
@@ -228,6 +228,8 @@ class Agent():
                 self.curEnergy -= env.foodValue/4 * multiplier
                 other_agent.curEnergy -= env.foodValue/4 * multiplier
 
+        self.senseSharing(other_agent, thisAction, otherAction)
+
     def splitFood(self, other_agent, env):
         #accounts for multiple instances of food in one location
         
@@ -243,6 +245,34 @@ class Agent():
             multiplier += 1
 
         return multiplier
+
+    def senseSharing(self, other_agent, thisAction, otherAction):
+        if thisAction == otherAction and thisAction == True:
+            if np.random.random_sample() <= self.genome["senseSharing"]:
+                other_agent.reputation += 1
+
+            if np.random.random_sample() <= other_agent.genome["senseSharing"]:
+                self.reputation += 1
+
+        elif thisAction == False and otherAction == True:
+            if np.random.random_sample() <= self.genome["senseSharing"]:
+                other_agent.reputation += 1
+
+            if np.random.random_sample() <= other_agent.genome["senseSharing"]:
+                self.reputation -= 1
+            
+        elif thisAction == True and otherAction == False:
+            if np.random.random_sample() <= self.genome["senseSharing"]:
+                other_agent.reputation -= 1
+
+            if np.random.random_sample() <= other_agent.genome["senseSharing"]:
+                self.reputation += 1
+        else:
+            if np.random.random_sample() <= self.genome["senseSharing"]:
+                other_agent.reputation -= 1
+
+            if np.random.random_sample() <= other_agent.genome["senseSharing"]:
+                self.reputation -= 1
 
     def eatAgent(self, world, other_agent):
         self.curEnergy += other_agent.curEnergy
@@ -267,23 +297,27 @@ class Agent():
             self.didCommunicate = False
             return None
 
-    def shareFood(self, env, isAltrustic):
+    def shareFood(self, env, agent_list, isAltrustic):
         if isAltrustic == True:
-            self.cooperate(env)
+            self.cooperate(agent_list, env)
 
         else:
-            self.defect(env)
+            self.defect(agent_list, env)
 
-    def cooperate(self, env):
+    def cooperate(self, agent_list, env):
         if self.curEnergy >= self.reqEnergy:
             env.foodPool += (self.curEnergy - self.reqEnergy) / 2
             self.curEnergy -= (self.curEnergy - self.reqEnergy) / 2
 
-        self.reputation += 1
+        random_agent = agent_list[np.random.randint(0, len(agent_list))]
+        if np.random.random_sample() <= random_agent.genome["senseDonation"]:
+            self.reputation += 1
 
 
-    def defect(self, env):
-        self.reputation -= 1
+    def defect(self, agent_list, env):
+        random_agent = agent_list[np.random.randint(0, len(agent_list))]
+        if np.random.random_sample() <= random_agent.genome["senseDonation"]:
+            self.reputation -= 1
 
     def senseCommunication(self, agent_list):
         if self.partner == None:
