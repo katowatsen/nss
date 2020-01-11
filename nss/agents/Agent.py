@@ -23,11 +23,15 @@ class Agent():
                   "altruism": np.random.random_sample(),
 
                 
-                  #probability that agent will sense defection
-                  "senseDefect": np.random.random_sample(),
+                  #probability that agent will sense defection in sharing food to an individual agent
 
-                  #probability that agent will sense defection in the location of food
-                  "senseCommunicate": np.random.random_sample(),
+                  "senseSharing": np.random.random_sample(),
+
+                  #probability that agent will sense defection in sharing food to the entire group
+
+                  "senseDonation": np.random.random_sample(),
+                  #probability that agent will sense defection in communication 
+                  "senseCommunication": np.random.random_sample(),
 
                   }
 
@@ -48,7 +52,6 @@ class Agent():
 
     def determine_next(self, env, world, agent_list):
         '''tasks should be parralizable'''
-        #moralize
 
         self.travel(self.search(env), env)
 
@@ -68,11 +71,12 @@ class Agent():
                     self.negotiate(other_agent, world, env)
 
             self.eatFood(env)
+        self.senseCommunication(agent_list)
 
         #agent reproduces and if conditions are not satisified, is removed from model
         if world.tick == world.totalTicks:
             self.curEnergy += env.foodPool/len(agent_list)
-            reproducedAgents = self.reproduce(env,world,10,self.MAX_mass,0.5)
+            reproducedAgents = self.reproduce(env,world,10,0.5)
             '''kills current agent if it does not have
             required energy at the end of cycle'''
             
@@ -80,7 +84,6 @@ class Agent():
                 Agent.removeAgent(self, world)
 
             return reproducedAgents
-
         return self
 
     def search(self, env):
@@ -154,16 +157,16 @@ class Agent():
             env.removeFoodAtPosition(self.position)
             self.curEnergy += env.foodValue
 
-    def reproduce(self, env, world, reproduceCost, MAX_mass, MAX_deviation):
-        sub_agent_list = []
+    def reproduce(self, env, world, reproduceCost, MAX_deviation):
+        reproduced = []
 
         while self.curEnergy >= self.reqEnergy + reproduceCost and self.reqEnergy > 0:
-            child = Agent(env,world, MAX_mass)
-            sub_agent_list.append(self.mutateChild(child, MAX_deviation))
+            child = Agent(env,world, self.MAX_mass)
+            reproduced.append(self.mutateChild(child, MAX_deviation))
 
             self.curEnergy -= reproduceCost
 
-        return sub_agent_list
+        return reproduced 
 
     def mutateChild(self, child, MAX_deviation):
 
@@ -178,9 +181,13 @@ class Agent():
                 child.genome[k] = 0.00001
 
 
-        child.reqEnergy = child.genome["mass"] * 0.5 *math.pow(child.genome["speed"], 2) + child.genome["search"]
         if child.genome["altruism"] > 1:
             child.genome["altruism"] = 1
+
+        if child.genome["mass"] > child.MAX_mass:
+            child.genome["mass"] = child.MAX_mass
+
+        child.reqEnergy = child.genome["mass"] * 0.5 *math.pow(child.genome["speed"], 2) + child.genome["search"]
 
         return child
 
@@ -246,15 +253,18 @@ class Agent():
 
     def determineAltruism(self):
 
-        if np.random.random_sample() < self.genome["altruism"]:
+        if np.random.random_sample() <= self.genome["altruism"]:
             return True
         else:
             return False 
 
     def communicate(self, isAltrustic):
         if isAltrustic == True:
+            self.didCommunicate = True
             return self
+            
         else:
+            self.didCommunicate = False
             return None
 
     def shareFood(self, env, isAltrustic):
@@ -273,9 +283,20 @@ class Agent():
 
 
     def defect(self, env):
-        # does nothing
         self.reputation -= 1
 
+    def senseCommunication(self, agent_list):
+        if self.partner == None:
+            if np.random.random_sample() <= self.genome["senseCommunication"]:
+                for agent in agent_list:
+                    if agent.partner != None and self.genome == agent.partner.genome:
+                        #lowers reputation of defecting agent
+                        agent.reputation -=1
+        else:
+            if np.random.random_sample() <= self.genome["senseCommunication"]:
+                for agent in agent_list:
+                    if agent.partner != None and self.genome == agent.partner.genome:
+                        #raises reputation of defecting agent
+                        agent.reputation +=1
 
-    def moralize(self):
-        pass
+        return agent_list
