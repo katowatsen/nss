@@ -70,8 +70,11 @@ class Engine():
                          "avgSearch" : avg_genome['search'],
                          "avgSpeed" : avg_genome['speed'],
                          "avgMass" : avg_genome['mass'],
+                         "avgSenseSharing" : avg_genome['senseSharing'],
+                         "avgSenseDonation" : avg_genome['senseDonation'],
+                         "avgSenseCommunicaiton" : avg_genome['senseCommunication'],
                          "avgAltruism" : avg_genome['altruism'],
-                         "avgReputation" : avgRep
+                         "avgReputation" : world.rep_mean 
                          }) 
 
             if world.cycle == 1:
@@ -104,16 +107,24 @@ class Engine():
 
                 agent_list = pool.map(self.worker_determine_next, ((agent, env, world, agent_list) for agent in agent_list))
                 
+
+
+                #update 
+
+                for agent in agent_list:
+                    agent.update_strat(env, world, agent_list)
+
                 if world.tick == world.totalTicks:
                     #add food to foodPool
                     for agent in agent_list:
                         agent.shareFood(env, agent_list, agent.determineAltruism())
 
-                #update 
+                    world.calcStats(agent_list)
+
                 compiled_list = []
 
                 for agent in agent_list:
-                    compiled_list.append(agent.update_strat(env, world, agent_list))
+                    compiled_list.append(agent.post_interaction(env, world, agent_list))
 
                 #tests if complied list has multiple dimentions
                 if len(compiled_list) > 0 and isinstance(
@@ -122,6 +133,7 @@ class Engine():
                     #flattens compiled list and assigns it to agent_list
                     if world.tick == world.totalTicks:
                         #removes agents
+
                         compiled_list.append(world.removeAgents(agent_list))
                         agent_list = list(chain.from_iterable(compiled_list)) 
 
