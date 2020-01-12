@@ -1,3 +1,5 @@
+import numpy as np
+
 class World():
 
     def __init__(self, totalCycles, totalTicks):
@@ -6,6 +8,9 @@ class World():
         self.totalCycles = totalCycles
         self.totalTicks = totalTicks
         self.removeAgentsList = []
+        self.rep_mean = None 
+        self.rep_deviation = None
+        self.rep_threshold = 0 
 
     def resetTick(self):
         self.tick = 1
@@ -16,14 +21,27 @@ class World():
     def updateCycle(self):
         self.cycle += 1
 
-    def removeAgents(self, agentList):
+    def removeAgents(self, agent_list):
 
         #removes duplicate agents from agentList 
         self.removeAgentsList = list(set(self.removeAgentsList))
 
         for agent in self.removeAgentsList:
-            agentList.remove(agent)
+            agent_list.remove(agent)
 
         self.removeAgentsList.clear()
 
-        return agentList
+        return agent_list 
+
+    def calcStats(self, agent_list):
+        reputation = [agent.reputation for agent in agent_list]
+        if len(agent_list) == 1:
+            self.rep_deviation = 1
+            self.rep_mean = reputation[0] - 0.01
+
+        else:
+            self.rep_deviation = np.std(reputation)
+            self.rep_mean = np.mean(reputation)
+
+
+
