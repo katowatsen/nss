@@ -57,34 +57,41 @@ class Agent():
 
         return self
 
-
-
     def update_strat(self, env, world, agent_list):
 
         if env.foodAtPosition(self.position):
-            #make sure another agent isn't at this position
-            #if another agent is at this position-
-            #do altrustic/selfish behavior
-
             for other_agent in agent_list:
                 if other_agent.position == self.position and id(other_agent) != id(self):
                     self.negotiate(other_agent, world, env)
 
             self.eatFood(env)
+
         self.senseCommunication(agent_list)
+
+    def post_interaction(self, env, world, agent_list):
 
         #agent reproduces and if conditions are not satisified, is removed from model
         if world.tick == world.totalTicks:
+
+            self.moralize(world)
             self.curEnergy += env.foodPool/len(agent_list)
-            reproducedAgents = self.reproduce(env,world,10,0.5)
+
             '''kills current agent if it does not have
             required energy at the end of cycle'''
-            
             if self.curEnergy < self.reqEnergy:
                 Agent.removeAgent(self, world)
 
+            if self not in world.removeAgentsList:  
+                reproducedAgents = self.reproduce(env,world,2,0.5)
+
+            else:
+                reproducedAgents = []
+
+
             return reproducedAgents
+
         return self
+
 
     def search(self, env):
 
@@ -197,7 +204,9 @@ class Agent():
 
         if thisAction == otherAction and thisAction == True:
             #split food
-            self.splitFood(other_agent,  env)
+            multiplier = self.splitFood(other_agent,  env)
+            self.curEnergy -= env.foodValue/2 * multiplier
+            other_agent.curEnergy -= env.foodValue/2 * multiplier
 
         elif thisAction == False and otherAction == True:
             #this agent takes food
@@ -281,8 +290,7 @@ class Agent():
     def removeAgent(agent, world):
         world.removeAgentsList.append(agent)
 
-    def determineAltruism(self):
-
+    def determineAltruism(self): 
         if np.random.random_sample() <= self.genome["altruism"]:
             return True
         else:
@@ -334,3 +342,11 @@ class Agent():
                         agent.reputation +=1
 
         return agent_list
+
+    def moralize(self, world):
+        rep_z_score = (self.reputation - world.rep_mean) / world.rep_deviation
+        if rep_z_score < world.rep_threshold:
+            world.removeAgentsList.append(self)
+            
+        self.reputation = 0
+
