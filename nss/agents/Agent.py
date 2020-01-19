@@ -22,7 +22,6 @@ class Agent():
                   #altruism is a probability that one will act altrusticly
                   "altruism": np.random.random_sample(),
 
-                
                   #probability that agent will sense defection in sharing food to an individual agent
 
                   "senseSharing": np.random.random_sample(),
@@ -82,7 +81,7 @@ class Agent():
                 Agent.removeAgent(self, world)
 
             if self not in world.removeAgentsList:  
-                reproducedAgents = self.reproduce(env,world,2,0.5)
+                reproducedAgents = self.reproduce(env,world,10,1)
 
             else:
                 reproducedAgents = []
@@ -190,6 +189,15 @@ class Agent():
 
         if child.genome["altruism"] > 1:
             child.genome["altruism"] = 1
+
+        if child.genome["senseCommunication"] > 1:
+            child.genome["senseCommunication"] = 1
+
+        if child.genome["senseSharing"] > 1:
+            child.genome["senseSharing"] = 1
+
+        if child.genome["senseDonation"] > 1:
+            child.genome["senseDonation"] = 1
 
         if child.genome["mass"] > child.MAX_mass:
             child.genome["mass"] = child.MAX_mass
@@ -347,6 +355,9 @@ class Agent():
         rep_z_score = (self.reputation - world.rep_mean) / world.rep_deviation
         if rep_z_score < world.rep_threshold:
             world.removeAgentsList.append(self)
-            
+
+        elif rep_z_score < world.rep_threshold/2:
+            self.curEnergy = (self.reqEnergy - self.curEnergy)/2
+        
         self.reputation = 0
 

@@ -23,6 +23,9 @@ class Engine():
 
 
         while world.cycle <= world.totalCycles:
+            if len(agent_list) <= 0:
+                print("All agents died before program termination")
+                exit()
 
             #does things before the cycle begins
 
@@ -72,7 +75,7 @@ class Engine():
                          "avgMass" : avg_genome['mass'],
                          "avgSenseSharing" : avg_genome['senseSharing'],
                          "avgSenseDonation" : avg_genome['senseDonation'],
-                         "avgSenseCommunicaiton" : avg_genome['senseCommunication'],
+                         "avgSenseCommunication" : avg_genome['senseCommunication'],
                          "avgAltruism" : avg_genome['altruism'],
                          "avgReputation" : world.rep_mean 
                          }) 

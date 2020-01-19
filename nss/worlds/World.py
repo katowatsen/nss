@@ -10,7 +10,7 @@ class World():
         self.removeAgentsList = []
         self.rep_mean = None 
         self.rep_deviation = None
-        self.rep_threshold = 0 
+        self.rep_threshold = -1
 
     def resetTick(self):
         self.tick = 1
