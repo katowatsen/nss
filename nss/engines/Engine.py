@@ -3,7 +3,7 @@ from itertools import chain
 import copy
 #import os
 from tqdm import tqdm
-from ..util.Analysis import Analysis 
+from util.Analysis import Analysis 
 import time
 
 class Engine():

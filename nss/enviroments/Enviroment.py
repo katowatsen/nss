@@ -2,12 +2,12 @@ import numpy as np
 
 class Enviroment:
 
-    def __init__(self, dim, foodAmount):
+    def __init__(self, dim, foodAmount, foodValue):
 
         self.dim = dim #should be in (x, y) format
         self.foodAmount = foodAmount
+        self.foodValue = foodValue 
         self.map = {}
-        self.foodValue = 50
         self.foodPool = 0
 
 

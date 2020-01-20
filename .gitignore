@@ -2,5 +2,6 @@
 __pycache__
 *.csv
 .DS_Store
-.c
-.so
+*.c
+*.so
+build
