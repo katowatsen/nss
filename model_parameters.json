@@ -1,0 +1,11 @@
+{
+    "seed": "None",
+    "worldCycles": 1000,
+    "worldTicks": 4,
+    "envDim": [100,100],
+    "foodPerCycle": 60,
+    "foodValue": 90,
+    "initalAgentAmount": 100,
+    "agentMaxMass": 10,
+    "agentMaxDev": 1
+}
