@@ -1,1 +1,1 @@
-## Implementing cython to work with nss
+## Natural Selection Simulator with Moralistic Agents
