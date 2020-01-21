@@ -8,9 +8,6 @@ import time
 
 class Engine():
 
-    def __init__(self):
-        pass
-
     def run(self, agent_list, env, world):
         print("Running nss:")
         analyze = Analysis()

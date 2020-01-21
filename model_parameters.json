@@ -1,5 +1,4 @@
 {
-    "seed": "None",
     "worldCycles": 1000,
     "worldTicks": 4,
     "envDim": [100,100],
