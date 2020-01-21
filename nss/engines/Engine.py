@@ -1,7 +1,6 @@
 import multiprocessing as mp
 from itertools import chain 
 import copy
-#import os
 from tqdm import tqdm
 from nss.util.Analysis import Analysis 
 import time
@@ -32,6 +31,68 @@ class Engine():
             env.foodPool = 0
 
             #averages genome attributes of the agents
+
+
+            #pairs interaction partners
+
+            i = 1
+            for agent in agent_list:
+                #tests for last agent in agent list 
+                if i % 2 == 0:
+                    agent.partner = copy.copy(
+                    agent_list[i-2].communicate(
+                    agent_list[i-2].determineAltruism()))
+
+                elif i == len(agent_list):
+                    agent.partner = None
+
+                else:
+                    agent.partner = copy.copy(
+                    agent_list[i].communicate(
+                    agent_list[i].determineAltruism()))
+
+                i += 1
+
+            while world.tick <= world.totalTicks:
+
+                #agents interact with each other
+
+                agent_list = pool.map(self.worker_determine_next, ((agent, env, world, agent_list) for agent in agent_list))
+                
+                #update 
+
+                for agent in agent_list:
+                    agent.update_strat(env, world, agent_list)
+
+                if world.tick == world.totalTicks:
+                    #add food to foodPool
+                    for agent in agent_list:
+                        agent.shareFood(env, agent_list, agent.determineAltruism())
+
+                    world.calcStats(agent_list)
+
+                compiled_list = []
+
+                for agent in agent_list:
+                    compiled_list.append(agent.post_interaction(env, world, agent_list))
+
+                #tests if complied list has multiple dimentions
+                if len(compiled_list) > 0 and isinstance(
+                       compiled_list[0], list):
+
+                    #flattens compiled list and assigns it to agent_list
+                    if world.tick == world.totalTicks:
+                        #removes agents
+
+                        compiled_list.append(world.removeAgents(agent_list))
+                        agent_list = list(chain.from_iterable(compiled_list)) 
+
+                else:
+                    compiled_list = world.removeAgents(compiled_list)
+                    agent_list = copy.copy(compiled_list)
+
+                world.updateTick()
+
             avgNrg = 0
             avgRep = 0
 
@@ -80,69 +141,6 @@ class Engine():
             if world.cycle == 1:
                 analyze.writeHeaders(data)
 
-
-            #pairs interaction partners
-
-            i = 1
-            for agent in agent_list:
-                #tests for last agent in agent list 
-                if i % 2 == 0:
-                    agent.partner = copy.copy(
-                    agent_list[i-2].communicate(
-                    agent_list[i-2].determineAltruism()))
-
-                elif i == len(agent_list):
-                    agent.partner = None
-
-                else:
-                    agent.partner = copy.copy(
-                    agent_list[i].communicate(
-                    agent_list[i].determineAltruism()))
-
-                i += 1
-
-            while world.tick <= world.totalTicks:
-
-                #agents interact with each other
-
-                agent_list = pool.map(self.worker_determine_next, ((agent, env, world, agent_list) for agent in agent_list))
-                
-
-
-                #update 
-
-                for agent in agent_list:
-                    agent.update_strat(env, world, agent_list)
-
-                if world.tick == world.totalTicks:
-                    #add food to foodPool
-                    for agent in agent_list:
-                        agent.shareFood(env, agent_list, agent.determineAltruism())
-
-                    world.calcStats(agent_list)
-
-                compiled_list = []
-
-                for agent in agent_list:
-                    compiled_list.append(agent.post_interaction(env, world, agent_list))
-
-                #tests if complied list has multiple dimentions
-                if len(compiled_list) > 0 and isinstance(
-                       compiled_list[0], list):
-
-                    #flattens compiled list and assigns it to agent_list
-                    if world.tick == world.totalTicks:
-                        #removes agents
-
-                        compiled_list.append(world.removeAgents(agent_list))
-                        agent_list = list(chain.from_iterable(compiled_list)) 
-
-                else:
-                    compiled_list = world.removeAgents(compiled_list)
-                    agent_list = copy.copy(compiled_list)
-
-                world.updateTick()
-
             analyze.writeRow(data)
             data.clear()
 
@@ -157,8 +155,7 @@ class Engine():
 
 
         analyze.read()
-
-        return agent_list
+        analyze.createFigure()
 
     def worker_determine_next(self, arg):
         agent, env, world, agent_list = arg

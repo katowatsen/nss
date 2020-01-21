@@ -1,10 +1,10 @@
 {
-    "worldCycles": 1000,
-    "worldTicks": 4,
+    "worldCycles": 200,
+    "worldTicks": 2,
     "envDim": [100,100],
-    "foodPerCycle": 60,
-    "foodValue": 90,
-    "initalAgentAmount": 100,
-    "agentMaxMass": 10,
-    "agentMaxDev": 1
+    "foodPerCycle": 50,
+    "foodValue": 40,
+    "initalAgentAmount": 200,
+    "agentMaxMass": 1,
+    "agentMaxDev": -1
 }

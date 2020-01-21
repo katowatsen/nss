@@ -3,6 +3,8 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+
 
 class Analysis():
     def __init__(self):
@@ -37,29 +39,39 @@ class Analysis():
     def read(self):
         try:
 
-            self.data = pd.read_csv(self.fileName)
+            self.df = pd.read_csv(self.fileName)
 
         except(EOFError):
             print("No file found.")
 
-        print(self.data.head())
-
-    def parse_CSV(self):
-
-        major_data = []
-
-        for sub_data in data:
-            row = []
-
-            for k in sorted(sub_data.keys()):
-                row.append(sub_data[k])
-
-            major_data.append(row)
+    def parse_DF(self):
 
             
-        self.data = np.array(major_data)
+        self.data = self.df.to_numpy()
 
-    def createFigure(self):
+    def createFigure(self, x, y):
+        self.parse_DF()
 
+        time = self.data[:,0]
+        alt = self.data[:,-2]
         fig = plt.figure()
+        fig.suptitle("Altruism v.s. Time")
+        fig, ax = plt.subplots()
+        ax.plot(time, alt)
 
+        canvas = plt.get_current_fig_manager().canvas
+
+        agg = canvas.switch_backends(FigureCanvasAgg)
+        agg.draw()
+        s, (width, height) = agg.print_to_buffer()
+
+        # Convert to a NumPy array.
+        X = np.frombuffer(s, np.uint8).reshape((height, width, 4))
+
+        # Pass off to PIL.
+        from PIL import Image
+        im = Image.frombytes("RGBA", (width, height), s)
+
+        # Uncomment this line to display the image using ImageMagick's `display` tool.
+        im.save("output/alt-time.png")
+        im.show()
