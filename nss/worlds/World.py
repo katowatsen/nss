@@ -1,4 +1,6 @@
 import numpy as np
+import scipy.stats as st
+
 
 class World():
 
@@ -10,7 +12,7 @@ class World():
         self.removeAgentsList = []
         self.rep_mean = None 
         self.rep_deviation = None
-        self.rep_threshold = -1
+        self.rep_threshold = None 
 
     def resetTick(self):
         self.tick = 1
@@ -33,7 +35,17 @@ class World():
 
         return agent_list 
 
+    def calcThreshold(self, agent_list):
+        total_tolerance = 0
+        for agent in agent_list:
+            total_tolerance += agent.genome["tolerance"]
+
+        avg_tolerance = total_tolerance / len(agent_list) 
+        self.rep_threshold = st.norm.ppf(avg_tolerance)
+
     def calcStats(self, agent_list):
+        self.calcThreshold(agent_list)
+
         reputation = [agent.reputation for agent in agent_list]
         if len(agent_list) == 1:
             self.rep_deviation = 1
@@ -42,6 +54,8 @@ class World():
         else:
             self.rep_deviation = np.std(reputation)
             self.rep_mean = np.mean(reputation)
+
+
 
 
 

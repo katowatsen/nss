@@ -4,20 +4,22 @@ import copy
 
 class Agent():
 
-    def __init__(self, env, world, MAX_mass):
-        self.MAX_mass = MAX_mass
+    def __init__(self, env, world, max_mass, max_deviation, reproduce_cost):
+        self.max_mass = max_mass 
+        self.max_deviation = max_deviation
+        self.reproduce_cost = reproduce_cost
         #initalizes a genome with random genes
         self.genome = {
-                  #MAX search length is the diagonal of the enviroment
+                  #max search length is the diagonal of the enviroment
                   "speed": np.random.random_sample() * math.hypot(
                                 env.dim[0], env.dim[1]) / world.totalTicks,
 
-                  #MAX search distance is the diagonal of the enviroment
+                  #max search distance is the diagonal of the enviroment
                   "search": np.random.random_sample() * math.hypot(
                                 env.dim[0], env.dim[1]) /world.totalTicks,
 
-                  #MAX mass is a predefined constatnt
-                  "mass": np.random.random_sample()* MAX_mass,
+                  #max mass is a predefined constatnt
+                  "mass": np.random.random_sample()* max_mass,
 
                   #altruism is a probability that one will act altrusticly
                   "altruism": np.random.random_sample(),
@@ -32,6 +34,7 @@ class Agent():
                   #probability that agent will sense defection in communication 
                   "senseCommunication": np.random.random_sample(),
 
+                  "tolerance": np.random.random_sample()
                   }
 
         self.curEnergy = 0
@@ -81,7 +84,7 @@ class Agent():
                 Agent.removeAgent(self, world)
 
             if self not in world.removeAgentsList:  
-                reproducedAgents = self.reproduce(env,world,10,1)
+                reproducedAgents = self.reproduce(env,world)
 
             else:
                 reproducedAgents = []
@@ -163,25 +166,25 @@ class Agent():
             env.removeFoodAtPosition(self.position)
             self.curEnergy += env.foodValue
 
-    def reproduce(self, env, world, reproduceCost, MAX_deviation):
+    def reproduce(self, env, world):
         reproduced = []
 
-        while self.curEnergy >= self.reqEnergy + reproduceCost and self.reqEnergy > 0:
-            child = Agent(env,world, self.MAX_mass)
-            reproduced.append(self.mutateChild(child, MAX_deviation))
+        while self.curEnergy >= self.reqEnergy + self.reproduce_cost and self.reqEnergy > 0:
+            child = Agent(env,world, self.max_mass, self.max_deviation, self.reproduce_cost)
+            reproduced.append(self.mutateChild(child))
 
-            self.curEnergy -= reproduceCost
+            self.curEnergy -= self.reproduce_cost
 
         return reproduced 
 
-    def mutateChild(self, child, MAX_deviation):
+    def mutateChild(self, child):
 
         child.genome.clear()
         child.genome = copy.deepcopy(self.genome)
         for k in child.genome.keys():
 
             child.genome[k] += np.random.choice(
-            a = [-1,1]) * np.random.random_sample() * MAX_deviation
+            a = [-1,1]) * np.random.random_sample() * self.max_deviation
 
             if child.genome[k] < 0:
                 child.genome[k] = 0.00001
@@ -199,8 +202,11 @@ class Agent():
         if child.genome["senseDonation"] > 1:
             child.genome["senseDonation"] = 1
 
-        if child.genome["mass"] > child.MAX_mass:
-            child.genome["mass"] = child.MAX_mass
+        if child.genome["tolerance"] > 1:
+            child.genome["tolerance"] = 1
+
+        if child.genome["mass"] > child.max_mass:
+            child.genome["mass"] = child.max_mass
 
         child.reqEnergy = child.genome["mass"] * 0.5 *math.pow(child.genome["speed"], 2) + child.genome["search"]
 
@@ -357,7 +363,7 @@ class Agent():
             world.removeAgentsList.append(self)
 
         elif rep_z_score < world.rep_threshold/2:
-            self.curEnergy = (self.reqEnergy - self.curEnergy)/2
+            self.curEnergy = (self.reqEnergy - self.curEnergy)/4
         
         self.reputation = 0
 

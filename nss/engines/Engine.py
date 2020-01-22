@@ -2,14 +2,12 @@ import multiprocessing as mp
 from itertools import chain 
 import copy
 from tqdm import tqdm
-from nss.util.Analysis import Analysis 
 import time
 
 class Engine():
 
-    def run(self, agent_list, env, world):
+    def run(self, agent_list, env, world, analyze):
         print("Running nss:")
-        analyze = Analysis()
 
         data = []
 
@@ -126,7 +124,7 @@ class Engine():
 
             #prepares data for output 
             data.append({"cycle": world.cycle,
-                         "length": len(agent_list), 
+                         "population": len(agent_list), 
                          "reqEnergy" : avgNrg,
                          "avgSearch" : avg_genome['search'],
                          "avgSpeed" : avg_genome['speed'],
@@ -135,7 +133,8 @@ class Engine():
                          "avgSenseDonation" : avg_genome['senseDonation'],
                          "avgSenseCommunication" : avg_genome['senseCommunication'],
                          "avgAltruism" : avg_genome['altruism'],
-                         "avgReputation" : world.rep_mean 
+                         "avgTolerance" : avg_genome['tolerance'],
+                         "avgReputation" : world.rep_mean,
                          }) 
 
             if world.cycle == 1:
@@ -155,7 +154,7 @@ class Engine():
 
 
         analyze.read()
-        analyze.createFigure()
+        analyze.createFigures()
 
     def worker_determine_next(self, arg):
         agent, env, world, agent_list = arg

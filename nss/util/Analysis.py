@@ -7,7 +7,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 
 class Analysis():
-    def __init__(self):
+    def __init__(self, graphs):
 
         dirname = os.path.dirname(__file__)
         parent_dirname = os.path.dirname(dirname)
@@ -17,6 +17,8 @@ class Analysis():
         #removes preexisting data
         if os.path.exists(self.fileName):
             os.remove(self.fileName)
+
+        self.graphs = graphs
 
     def writeHeaders(self, data):
 
@@ -46,18 +48,33 @@ class Analysis():
 
     def parse_DF(self):
 
-            
         self.data = self.df.to_numpy()
+        self.keys = list(self.df.keys())
 
     def createFigure(self, x, y):
         self.parse_DF()
 
-        time = self.data[:,0]
-        alt = self.data[:,-2]
+        for key in self.keys:
+            if key == x:
+                x_pos = self.keys.index(key)
+
+            if key == y:
+                y_pos = self.keys.index(key)
+
+        x_axis = self.data[:,x_pos]
+        y_axis = self.data[:,y_pos]
         fig = plt.figure()
-        fig.suptitle("Altruism v.s. Time")
+
+        if y == "cycle":
+            y = "time"
+
+        title = str(x) + "-" + str(y)
+        fig.suptitle(title)
         fig, ax = plt.subplots()
-        ax.plot(time, alt)
+        ax.set_xlabel(x)
+        ax.set_ylabel(y)
+
+        ax.plot(x_axis, y_axis)
 
         canvas = plt.get_current_fig_manager().canvas
 
@@ -73,5 +90,8 @@ class Analysis():
         im = Image.frombytes("RGBA", (width, height), s)
 
         # Uncomment this line to display the image using ImageMagick's `display` tool.
-        im.save("output/alt-time.png")
-        im.show()
+        im.save("output/"+title+".png")
+
+    def createFigures(self):
+        for pair in self.graphs:
+            self.createFigure(pair[0], pair[1])
