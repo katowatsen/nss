@@ -1,6 +1,6 @@
 {
     "worldCycles": 100,
-    "worldTicks": 10,
+    "worldTicks": 7,
     "envDim": [100,100],
     "foodPerCycle": 100,
     "foodValue": 30,
@@ -8,5 +8,5 @@
     "agentMaxMass": 1,
     "agentMaxDev": 0.05,
     "agentReproduceCost": 10,
-    "graph_varibles": [["avgAltruism", "cycle"], ["avgAltruism", "avgReputation"],["avgTolerance", "population"]]
+    "graph_varibles": [["cycle", "avgAltruism"], ["avgReputation","cycle"], ["avgTolerance", "avgAltruism"]]
 }
