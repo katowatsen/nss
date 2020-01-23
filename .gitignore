@@ -6,4 +6,4 @@ __pycache__
 *.so
 build
 *.json
-*.png
+*.pdf

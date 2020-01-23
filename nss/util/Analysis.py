@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import sklearn
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 
@@ -63,35 +64,33 @@ class Analysis():
 
         x_axis = self.data[:,x_pos]
         y_axis = self.data[:,y_pos]
-        fig = plt.figure()
+        fig = plt.figure(dpi=2000)
+        red = "#cc2529"
 
-        if y == "cycle":
-            y = "time"
+        if x == "cycle":
+            x  = "time"
+            title = str(x) + "-" + str(y)
+            fig, ax = plt.subplots()
+            fig.suptitle(title)
+            ax.set_xlabel(x)
+            ax.set_ylabel(y)
 
-        title = str(x) + "-" + str(y)
-        fig.suptitle(title)
-        fig, ax = plt.subplots()
-        ax.set_xlabel(x)
-        ax.set_ylabel(y)
+            ax.plot(x_axis, y_axis, red)
+        else: 
+            title = str(x) + "-" + str(y)
+            fig, ax = plt.subplots()
+            fig.suptitle(title)
+            ax.set_xlabel(x)
+            ax.set_ylabel(y)
 
-        ax.plot(x_axis, y_axis)
+            plt.scatter(x_axis, y_axis, c=red)
+            plt.plot(np.unique(x_axis), np.poly1d(np.polyfit(x_axis, y_axis, 1))(np.unique(x_axis)), "#3969b1")
 
-        canvas = plt.get_current_fig_manager().canvas
 
-        agg = canvas.switch_backends(FigureCanvasAgg)
-        agg.draw()
-        s, (width, height) = agg.print_to_buffer()
-
-        # Convert to a NumPy array.
-        X = np.frombuffer(s, np.uint8).reshape((height, width, 4))
-
-        # Pass off to PIL.
-        from PIL import Image
-        im = Image.frombytes("RGBA", (width, height), s)
-
-        # Uncomment this line to display the image using ImageMagick's `display` tool.
-        im.save("output/"+title+".png")
+        plt.savefig("output/"+title+".pdf")
 
     def createFigures(self):
         for pair in self.graphs:
+            print(pair)
             self.createFigure(pair[0], pair[1])
+        print("Produced graphs")

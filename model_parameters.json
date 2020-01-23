@@ -1,12 +1,12 @@
 {
-    "worldCycles": 100,
-    "worldTicks": 7,
+    "worldCycles": 1000,
+    "worldTicks": 8,
     "envDim": [100,100],
-    "foodPerCycle": 100,
-    "foodValue": 30,
+    "foodPerCycle": 80,
+    "foodValue": 40,
     "initalAgentAmount": 200,
     "agentMaxMass": 1,
-    "agentMaxDev": 0.05,
+    "agentMaxDev": 0.01,
     "agentReproduceCost": 10,
-    "graph_varibles": [["cycle", "avgAltruism"], ["avgReputation","cycle"], ["avgTolerance", "avgAltruism"]]
+    "graph_varibles": [["cycle", "avgAltruism"], ["cycle", "avgReputation"], ["cycle", "avgTolerance"],["avgTolerance", "avgAltruism"]]
 }
